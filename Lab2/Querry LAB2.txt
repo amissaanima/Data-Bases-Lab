@@ -1,0 +1,168 @@
+USE [LABA2]
+
+
+CREATE TABLE ClientsTable(
+	IDClient INT NOT NULL PRIMARY KEY,
+	FIO VARCHAR(40) NOT NULL,
+	Address VARCHAR(40) NOT NULL,
+	Passport VARCHAR(15) NOT NULL,
+	PhoneNumber VARCHAR(12) NOT NULL,
+	Discount INT
+)
+--Тут идёт приведение к третьей нф таблицы TourTable
+CREATE TABLE Country(
+    IDCountry INT NOT NULL PRIMARY KEY,
+    CountryName NVARCHAR(61)
+)
+
+CREATE TABLE Region(
+    IDRegion INT NOT NULL PRIMARY KEY,
+    IDCountry INT NOT NULL FOREIGN KEY REFERENCES Country([IDCountry]),
+    RegionName NVARCHAR(42)
+)
+-----------------------------------------------------
+
+CREATE TABLE TourTable(
+    IDTour INT NOT NULL PRIMARY KEY,
+    Program VARCHAR(300) NOT NULL,
+    Transport VARCHAR(30) NOT NULL,
+    IDRegion INT NOT NULL FOREIGN KEY REFERENCES Region([IDRegion]),
+    Duration INT NOT NULL
+)
+
+CREATE TABLE HotelsTable(
+    IDHotel INT NOT NULL PRIMARY KEY,
+    HotelType INT NOT NULL,
+    Location VARCHAR(70),
+    HotelName VARCHAR(50) NOT NULL
+)
+
+CREATE TABLE TourVariantTable(
+    IDTourVar INT NOT NULL PRIMARY KEY,
+    IDHotel INT NOT NULL FOREIGN KEY REFERENCES HotelsTable([IDHotel]),
+    IDTour INT NOT NULL FOREIGN KEY REFERENCES TourTable([IDTour]),
+    Cost INT NOT NULL
+)
+
+CREATE TABLE OrdersTable(
+	IDOrder INT NOT NULL PRIMARY KEY,
+	IDVarTour INT NOT NULL FOREIGN KEY REFERENCES TourVariantTable([IDTourVar]),
+	IDClient INT NOT NULL FOREIGN KEY REFERENCES ClientsTable([IDClient]),
+	TotalCost MONEY NOT NULL,
+	RegistrationDate DATE NOT NULL
+)
+
+CREATE TABLE ClaimsTable(
+	IDClaim INT NOT NULL PRIMARY KEY,
+    IDOrder INT NOT NULL FOREIGN KEY REFERENCES OrdersTable([IDOrder]),
+    Reply VARCHAR(20),
+    Status VARCHAR(20) NOT NULL,
+    Description VARCHAR(300) NOT NULL
+)
+
+--Дальше инсерты (Сгенерено ИИ, потому что работа долгая, а команды нетрудные)
+
+INSERT INTO ClientsTable (IDClient, FIO, Address, Passport, PhoneNumber, Discount)
+VALUES
+    (0, N'Рохина Вероника Алексеевна',       N'Ярославль, ул. Лескова, д.23, кв. 666',  N'9858 434434', N'+79027653365', 22),
+    (1, N'Ширнин Александр Дмитриевич',      N'Ярославль, ул. Борки, д.17',             N'7821 555444', N'89109654359',  10),
+    (2, N'Кузнецов Илья Андреевич',          N'Москва, ул. Тверская, д.5, кв. 12',      N'4501 112233', N'+79161112233', 5),
+    (3, N'Смирнова Ольга Викторовна',        N'Санкт-Петербург, Невский пр., д.88',     N'4002 445566', N'+79212223344', 15),
+    (4, N'Попов Дмитрий Сергеевич',          N'Казань, ул. Баумана, д.10',              N'9203 778899', N'+79173334455', NULL),
+    (5, N'Волкова Екатерина Ивановна',       N'Екатеринбург, ул. Мира, д.25',           N'6604 990011', N'+79125556677', 8),
+    (6, N'Морозов Артём Олегович',           N'Новосибирск, Красный пр., д.100',        N'5405 223344', N'+79137778899', 3),
+    (7, N'Новикова Анна Петровна',           N'Нижний Новгород, ул. Горького, д.3',     N'2206 556677', N'+79139990011', 12),
+    (8, N'Фёдоров Сергей Николаевич',        N'Самара, ул. Победы, д.45',               N'6307 889900', N'+79131112233', NULL),
+    (9, N'Егорова Наталья Владимировна',     N'Уфа, пр. Октября, д.50',                 N'8010 334455', N'+79134445566', 20);
+
+INSERT INTO Country (IDCountry, CountryName)
+VALUES
+    (0, N'Российская Федерация'),
+    (1, N'Беларусь'),
+    (2, N'Германия'),
+    (3, N'Франция'),
+    (4, N'Италия'),
+    (5, N'Испания'),
+    (6, N'Турция'),
+    (7, N'Египет'),
+    (8, N'Таиланд'),
+    (9, N'Япония');
+INSERT INTO Region (IDRegion, IDCountry, RegionName)
+VALUES
+    (0, 0, N'Республика Коми'),
+    (1, 0, N'Ярославская область'),
+    (2, 0, N'Иркутская область'),
+    (3, 1, N'Минская область'),
+    (4, 2, N'Берлин - Бранденбург'),
+    (5, 2, N'Бавария'),
+    (6, 3, N'Иль-де-Франс'),
+    (7, 4, N'Лацио'),
+    (8, 5, N'Каталония'),
+    (9, 6, N'Анталия');
+
+INSERT INTO HotelsTable (IDHotel, HotelType, Location, HotelName)
+VALUES
+    (0, 5, N'Сыктывкар',           N'Öтель'),
+    (1, 4, N'Ярославль',           N'Соколёна'),
+    (2, 3, N'Берлин',              N'Гутен морген'),
+    (3, 3, N'Минск',               N'Минск'),
+    (4, 4, N'Иркутская область',   N'Байкал'),
+    (5, 5, N'Москва',              N'Метрополь'),
+    (6, 4, N'Санкт-Петербург',     N'Невский Палас'),
+    (7, 3, N'Казань',              N'Мираж'),
+    (8, 5, N'Сочи',                N'Черное море'),
+    (9, 4, N'Анталия',             N'Antalya Resort');
+
+INSERT INTO TourTable (IDTour, Program, Transport, IDRegion, Duration)
+VALUES
+    (0, N'Отдых на природе, пешие прогулки, рыбалка',              N'Автобус',  0, 7),
+    (1, N'Экскурсионный тур: Золотое кольцо, храмы, музеи',        N'Автобус',  1, 5),
+    (2, N'Отдых на Байкале, круиз по озеру, баня',                 N'Поезд',    2, 10),
+    (3, N'Экскурсии по Минску, замки Мира и Несвижа',              N'Автобус',  3, 4),
+    (4, N'Обзорная экскурсия по Берлину, Бранденбургские ворота',  N'Самолет',  4, 6),
+    (5, N'Замки Баварии: Нойшванштайн, Хоэншвангау',               N'Самолет',  5, 8),
+    (6, N'Романтический Париж: Эйфелева башня, Лувр, Диснейленд',  N'Самолет',  6, 7),
+    (7, N'Римские каникулы: Колизей, Ватикан, фонтан Треви',       N'Самолет',  7, 5),
+    (8, N'Барселона: Саграда Фамилия, Гауди, пляжи',               N'Самолет',  8, 9),
+    (9, N'Пляжный отдых в Анталии, все включено',                  N'Самолет',  9, 12);
+
+INSERT INTO TourVariantTable (IDTourVar, IDHotel, IDTour, Cost)
+VALUES
+    (0, 0, 0, 35000),
+    (1, 1, 1, 28000),
+    (2, 4, 2, 54000),
+    (3, 3, 3, 32000),
+    (4, 2, 4, 61000),
+    (5, 5, 5, 88000),
+    (6, 6, 6, 95000),
+    (7, 7, 7, 47000),
+    (8, 8, 8, 72000),
+    (9, 9, 9, 66000);
+
+INSERT INTO OrdersTable (IDOrder, IDVarTour, IDClient, TotalCost, RegistrationDate)
+VALUES
+    (0, 0, 0, 35000,  '2024-01-10'),
+    (1, 1, 1, 28000,  '2024-01-22'),
+    (2, 2, 2, 54000,  '2024-02-05'),
+    (3, 3, 3, 32000,  '2024-02-18'),
+    (4, 4, 4, 61000,  '2024-03-01'),
+    (5, 5, 5, 88000,  '2024-03-15'),
+    (6, 6, 6, 95000,  '2024-04-02'),
+    (7, 7, 7, 47000,  '2024-04-20'),
+    (8, 8, 8, 72000,  '2024-05-08'),
+    (9, 9, 9, 66000,  '2024-05-25');
+
+INSERT INTO ClaimsTable (IDClaim, IDOrder, Reply, Status, Description)
+VALUES
+    (0, 0, N'Компенсация',  N'Закрыта',  N'Номер не соответствовал описанию, не работал отопление'),
+    (1, 1, N'Извинения',    N'Закрыта',  N'Гид опоздал на экскурсию на 1 час'),
+    (2, 2, N'Скидка 10%',   N'Закрыта',  N'Питание не соответствовало заявленному'),
+    (3, 3, N'Компенсация',  N'В работе', N'Шум от ремонта в соседнем номере'),
+    (4, 4, NULL,            N'Открыта',  N'Экскурсия была отменена без предупреждения'),
+    (5, 5, N'Извинения',    N'Закрыта',  N'Проблемы с трансфером из аэропорта'),
+    (6, 6, NULL,            N'Открыта',  N'Наличие насекомых в номере отеля'),
+    (7, 7, N'Компенсация',  N'Закрыта',  N'Не работал бассейн на территории'),
+    (8, 8, N'Скидка 5%',    N'В работе', N'Персонал отеля не говорил по-русски'),
+    (9, 9, NULL,            N'Открыта',  N'Проблемы с оформлением визы');
+
+
