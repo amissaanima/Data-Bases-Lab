@@ -1,0 +1,43 @@
+USE [LABA2]
+
+-- Запрос для задания А
+SELECT TOP 1 r.RegionName, COUNT(t.IDRegion) AS TourCount
+FROM TourTable t
+JOIN Region r ON r.IDRegion = t.IDRegion
+GROUP BY r.RegionName
+ORDER BY TourCount DESC;
+
+--Запрос для задания B
+SELECT tvt.IDTour, ht.HotelType
+FROM TourVariantTable tvt
+JOIN HotelsTable ht ON tvt.IDHotel = ht.IDHotel
+WHERE ht.HotelType != 5;
+
+--Запрос для задания C
+SELECT TOP 2 ot.IDClient, SUM(ot.TotalCost) AS TC
+FROM OrdersTable ot
+GROUP BY ot.IDClient
+HAVING COUNT(ot.IDClient) >= 2
+ORDER BY TC DESC;
+
+--Запросы для задания D
+SELECT TOP 1 WITH TIES tvt.IDTourVar, COUNT(ot.IDVarTour) AS CountOrders
+FROM OrdersTable ot
+RIGHT JOIN TourVariantTable tvt ON ot.IDVarTour = tvt.IDTourVar
+GROUP BY tvt.IDTourVar
+ORDER BY CountOrders DESC;
+
+SELECT TOP 1 WITH TIES tvt.IDTourVar, COUNT(ot.IDVarTour) AS CountOrders
+FROM OrdersTable ot
+RIGHT JOIN TourVariantTable tvt ON ot.IDVarTour = tvt.IDTourVar
+GROUP BY tvt.IDTourVar
+ORDER BY CountOrders;
+
+--Запрос для задания E
+SELECT TOP 1 r.RegionName, SUM(ot.TotalCost) AS TotalRegionCost
+FROM OrdersTable ot
+RIGHT JOIN TourVariantTable tvt ON ot.IDVarTour = tvt.IDTourVar
+JOIN TourTable tt ON tvt.IDTour = tt.IDTour
+JOIN Region r ON tt.IDRegion = r.IDRegion
+GROUP BY r.RegionName
+ORDER BY TotalRegionCost DESC;
